@@ -12,9 +12,11 @@ const options = [
 ]
 
 export const LoginSetupSteps = [
-    { label: "Login USer", step: "1" },
-    { label: "Verify Number", step: "2" },
-    { label: "Enter Code", step: "3" },
+    { label: "Login User", step: "1" },
+    { label: "Confirm Your Sign-In Details", step: "2" },
+    { label: "Verify Number", step: "3" },
+    { label: "Enter Code", step: "4" },
+    { label: "Enter Code", step: "5" },
     // { label: "Confirmation", step: "4" },
 ];
 

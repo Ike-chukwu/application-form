@@ -98,19 +98,19 @@ const StepOne = () => {
           label="Full Name"
           name="fullname"
           type="text"
-          labelClassName="text-[12px] font-bold capitalize pb-2"
+          labelClassName="text-xs font-bold capitalize pb-2"
           error={methods.formState.errors.fullname?.message as string}
-          inputClassName="px-4 py-3 border-[0.1px] border-grey rounded-[4px] w-full text-[10px]  "
+          inputClassName="px-4 py-3 border-[0.1px] border-grey rounded-[4px] w-full text-[14px]  "
         />
       </div>
       <div>
         <InputField
           label="Date of Birth"
           name="dob"
-          type="text"
-          labelClassName="text-[12px] font-bold capitalize ] pt-6 pb-2"
+          type="date"
+          labelClassName="text-xs font-bold capitalize ] pt-6 pb-2"
           error={methods.formState.errors.dob?.message as string}
-          inputClassName="px-4 py-3 border-[0.1px] border-grey rounded-[4px] w-full text-[10px]  "
+          inputClassName="px-4 py-3 border-[0.1px] border-grey rounded-[4px] w-full text-[14px]  "
         />
       </div>
       <div>
@@ -118,9 +118,9 @@ const StepOne = () => {
           label="Social Security Number"
           name="ssn"
           type="text"
-          labelClassName="text-[12px] font-bold capitalize ] pt-6 pb-2"
+          labelClassName="text-xs font-bold capitalize ] pt-6 pb-2"
           error={methods.formState.errors.ssn?.message as string}
-          inputClassName="px-4 py-3 border-[0.1px] border-grey rounded-[4px] w-full text-[10px]  "
+          inputClassName="px-4 py-3 border-[0.1px] border-grey rounded-[4px] w-full text-[14px]  "
         />
       </div>
       <div>
@@ -128,9 +128,9 @@ const StepOne = () => {
           label="Address"
           name="address"
           type="text"
-          labelClassName="text-[12px] font-bold capitalize ] pt-6 pb-2"
+          labelClassName="text-xs font-bold capitalize pt-6 pb-2"
           error={methods.formState.errors.address?.message as string}
-          inputClassName="px-4 py-3 border-[0.1px] border-grey rounded-[4px] w-full text-[10px]  "
+          inputClassName="px-4 py-3 border-[0.1px] border-grey rounded-[4px] w-full text-[14px]  "
         />
       </div>
     </div>

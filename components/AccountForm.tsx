@@ -3,29 +3,23 @@
 import { AccountSetupSteps } from "@/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import clsx from "clsx";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { CheckIcon, RightArrow } from "./icons";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
-import {
-  MultiStepPayload,
-  multiStepSchema,
-} from "@/app/services/account/schema";
+import { MultiStepPayload, multiStepSchema } from "@/services/account/schema";
 import StepOne from "./FormStepsForAccount/StepOne";
 import StepTwo from "./FormStepsForAccount/StepTwo";
 import StepThree from "./FormStepsForAccount/StepThree";
+import axios from "axios";
+import { ClipLoader } from "react-spinners";
+import { useRouter } from "next/navigation";
 
-type Prop = {
-  onSave: (values: MultiStepPayload) => void;
-  info?: any;
-  isLoading: boolean;
-};
-
-const AccountForm: React.FC<Prop> = ({ onSave, info, isLoading }) => {
+const AccountForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const {
     stepIndex,
     formStep,
-    push,
     back,
     next,
     changeQuery,
@@ -36,7 +30,7 @@ const AccountForm: React.FC<Prop> = ({ onSave, info, isLoading }) => {
     [<StepOne key={0} />, <StepTwo key={1} />, <StepThree key={2} />],
     "accountForm"
   );
-
+  const { push } = useRouter();
   const methods = useForm({
     resolver: yupResolver(multiStepSchema),
     mode: "all",
@@ -46,12 +40,30 @@ const AccountForm: React.FC<Prop> = ({ onSave, info, isLoading }) => {
     changeQuery("step", step);
   };
 
-  const onSubmit = (values: MultiStepPayload) => {
+  const onSubmit = async (values: MultiStepPayload) => {
     console.log(values);
+    setIsLoading(true);
+    try {
+      const response = await axios.post("/api/account", values);
+
+      if (response.status === 200) {
+        // toast.success("Message sent successfully!");
+        // setUserInput({ name: "", email: "", message: "" });
+        setIsLoading(false);
+        push("/confirmation");
+        // next(); // Only proceed if validation passes
+      } else {
+        console.error("Failed to send message.");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Error sending message.");
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="w-[600px] px-6 py-6 mx-auto bg-white rounded-[6px]">
+    <div className="w-[320px] md:w-[600px] px-6 py-6 mx-auto bg-white rounded-[6px]">
       <p className="text-[23px] pb-2">Identity Verification Form</p>
       <p className="text-[14px] pb-2 border-b-[0.2px] border-black">
         Fill out this form with accurate details to verify your identity. Ensure
@@ -129,7 +141,14 @@ const AccountForm: React.FC<Prop> = ({ onSave, info, isLoading }) => {
                     className="rounded-[4px] text-white bg-[#0171d3] px-3 py-2"
                     type="submit"
                   >
-                    {info ? "Edit" : "Save"}
+                    {isLoading ? (
+                      <>
+                        Saving...
+                        <ClipLoader className="ml-2" size={14} color="white" />
+                      </>
+                    ) : (
+                      "Save"
+                    )}
                   </button>
                 )}
               </div>

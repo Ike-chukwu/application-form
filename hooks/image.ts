@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { ImageService } from "../app/services/images";
+import { ImageService } from "../services/images";
 
 export const useUploadImages = () => {
   const { mutate, isPending, data } = useMutation({

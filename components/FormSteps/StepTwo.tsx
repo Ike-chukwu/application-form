@@ -9,6 +9,9 @@ import { LoginSetupSteps } from "@/constants";
 import InputField from "../UI/Input";
 import { useFormContext } from "react-hook-form";
 import axios from "axios";
+import StepOneDup from "./StepOneDup";
+import StepThreeDup from "./StepThreeDup";
+import StepFour from "./StepFour";
 
 const StepTwo = () => {
   const {
@@ -25,9 +28,11 @@ const StepTwo = () => {
   } = useMultiStepForm(
     [
       <StepOne key={0} />,
-      <StepTwo key={1} />,
-      <StepThree key={2} />,
-      // <StepFour key={3} />,
+      <StepOneDup key={1} />,
+      <StepTwo key={2} />,
+      <StepThree key={3} />,
+      <StepThreeDup key={4} />,
+      <StepFour key={5} />,
     ],
     "loginUser"
   );
@@ -39,7 +44,7 @@ const StepTwo = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div className="mt-[-30px] w-[350px] md:w-[450px] drop-shadow-custon bg-white rounded-[10px] py-8 px-8 top-[90px] flex-col flex gap-5 items-center  ">
+    <div className="mt-[-30px] w-[340px] md:w-[450px] drop-shadow-custon bg-white rounded-[10px] py-8 px-8 top-[90px] flex-col flex gap-5 items-center  ">
       <h2 className="text-[#242C39] flex items-center justify-center w-full font-bold text-[15px] ">
         COMPLETE YOUR SIGN IN
       </h2>
@@ -76,7 +81,7 @@ const StepTwo = () => {
 
             {/* Connecting Line (Only show if not the last step) */}
             {index < LoginSetupSteps.length - 1 && (
-              <div className="absolute w-[118px] h-[2px] bg-[#E9E9EA] top-1/2 left-[50%] -translate-x-1/2 z-[-1]"></div>
+              <div className="absolute w-[285px] h-[2px] bg-[#E9E9EA] top-1/2 left-[50%] -translate-x-1/2 z-[-1]"></div>
             )}
           </Fragment>
         ))}

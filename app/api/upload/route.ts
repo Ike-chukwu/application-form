@@ -1,113 +1,110 @@
-import { Buffer } from "node:buffer";
-
 import { NextRequest, NextResponse } from "next/server";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-
-import {
-  s3Client,
-  SPACES_BUCKET,
-  SPACES_URL,
-} from "../../helpers/common/digitalOceanConfig";
-
-function reduce(numerator: number, denominator: number) {
-  const gcd = function gcd(a: number, b: number): number {
-    return b ? gcd(b, a % b) : a;
-  };
-
-  const result = gcd(numerator, denominator);
-
-  return [numerator / result, denominator / result];
-}
+import sharp from "sharp";
+import { Buffer } from "node:buffer";
+import crypto from "crypto";
+import cloudinary from "@/lib/cloudinary";
+import { UploadApiResponse } from "cloudinary";
 
 export async function POST(req: NextRequest) {
-  const sharp = (await import("sharp")).default;
-  const res = NextResponse;
   const images: string[] = [];
   const errors: string[] = [];
-  const defaultImage = "image.webp";
 
   try {
     const formData = await req.formData();
     const files = formData.getAll("file") as File[];
-    const minWidth = +(formData.get("width") as string);
-    const minHeight = +(formData.get("height") as string);
+    const minWidth = +((formData.get("width") as string) || "0");
+    const minHeight = +((formData.get("height") as string) || "0");
 
     if (!files.length) {
-      return res.json({ message: "No files uploaded" }, { status: 400 });
+      return NextResponse.json(
+        { message: "No files uploaded" },
+        { status: 400 }
+      );
     }
 
     for (const file of files) {
-      if (file.size > 1024 * 1024 * 2) {
-        errors.push("File size can not be larger than 2mb");
-      }
-      const buffer = await file.arrayBuffer();
-      const sharpImage = sharp(Buffer.from(buffer));
+      try {
+        if (file.size > 1024 * 1024 * 10) {
+          errors.push("File size can not be larger than 2mb");
+          continue;
+        }
 
-      const { width = 0, height = 0 } = await sharpImage.metadata();
+        // Process image
+        const buffer = await file.arrayBuffer();
+        const sharpImage = sharp(Buffer.from(buffer));
+        const metadata = await sharpImage.metadata();
 
-      const isStandard =
-        minWidth && minHeight
-          ? (width ?? 0) >= minWidth || (height ?? 0) >= minHeight
-          : true;
+        const isStandard =
+          minWidth && minHeight
+            ? (metadata.width ?? 0) >= minWidth ||
+            (metadata.height ?? 0) >= minHeight
+            : true;
 
-      if (!isStandard) {
-        errors.push(
-          `${file.name} does not meet minimum requirements of ${minWidth}x${minHeight}`,
+        if (!isStandard) {
+          errors.push(
+            ` ${file.name} does not meet minimum requirements of ${minWidth}x${minHeight}`
+          );
+          continue;
+        }
+
+        // Generate optimized image
+        let optimizedBuffer: Buffer;
+        if (minWidth && minHeight) {
+          optimizedBuffer = await sharpImage
+            .resize({
+              width: minWidth,
+              height: minHeight,
+              fit: "cover",
+            })
+            .toFormat("webp", { quality: 80 })
+            .toBuffer();
+        } else {
+          optimizedBuffer = await sharpImage
+            .toFormat("webp", { quality: 80 })
+            .toBuffer();
+        }
+
+        // Generate filename
+        const fileName = `${file.name.substring(
+          0,
+          file.name.lastIndexOf(".")
+        )}-${crypto.randomUUID()}`;
+
+        // Upload to Cloudinary using buffer
+        const uploadResult = await new Promise<UploadApiResponse>(
+          (resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              {
+                public_id: fileName,
+                folder: "images",
+                resource_type: "image",
+                format: "webp",
+              },
+              (error, result) => {
+                if (error) reject(error);
+                else if (result) resolve(result as UploadApiResponse);
+                else reject(new Error("Upload failed with no result"));
+              }
+            );
+
+            uploadStream.end(optimizedBuffer);
+          }
         );
-        continue;
-      }
 
-      let optimizedBuffer;
-
-      if (minWidth && minHeight) {
-        // const [x, y] = reduce(minWidth, minHeight);
-
-        optimizedBuffer = await sharpImage
-          .resize({
-            width: minWidth,
-            height: minHeight,
-            fit: "cover",
-          })
-          .toFormat("webp", { compressionLevel: 9, quality: 80 })
-          .toBuffer();
-      } else {
-        optimizedBuffer = await sharpImage
-          .toFormat("webp", { compressionLevel: 9, quality: 80 })
-          .toBuffer();
-      }
-
-      const fileName = `${file.name.substring(0, file.name.lastIndexOf("."))}-${crypto.randomUUID()}.webp`;
-
-      const bucketParams = {
-        Bucket: SPACES_BUCKET,
-        Key: fileName,
-        Body: Buffer.from(optimizedBuffer),
-        ContentType: "image/webp",
-        ContentLength: file.length,
-        ACL: "public-read" as const,
-      };
-
-      const resp = await s3Client.send(new PutObjectCommand(bucketParams));
-
-      if (resp) {
-        images.push(`${SPACES_URL}/${fileName}`);
+        images.push(uploadResult.secure_url);
+      } catch (error: any) {
+        errors.push(`Error processing ${file.name}: ${error.message}`);
       }
     }
 
-    return res.json(
-      {
-        images,
-        errors,
-      },
-      { status: 200 },
-    );
+    return NextResponse.json({ images, errors }, { status: 200 });
   } catch (error: any) {
-    return res.json(
+    return NextResponse.json(
       {
-        message: error.message || "Error processing image",
+        message: error.message || "Error processing images",
         error: error,
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

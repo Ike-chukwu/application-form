@@ -25,7 +25,7 @@ const StepFour = () => {
     return () => clearTimeout(timeout);
   }, []);
   return (
-    <div className="mt-[-30px] w-[350px] md:w-[450px] drop-shadow-custon bg-white rounded-[10px] py-8 px-8 top-[90px] flex-col flex gap-2 items-center">
+    <div className="mt-[-30px] w-[340px] md:w-[450px] drop-shadow-custon bg-white rounded-[10px] py-8 px-8 top-[90px] flex-col flex gap-2 items-center">
       <p className="text-[14px]">You are now returning to</p>
       <p className="text-[#5A80AD] font-bold text-[14px]">{text}</p>
       <div className="py-3">

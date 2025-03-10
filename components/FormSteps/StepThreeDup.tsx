@@ -11,10 +11,10 @@ import StepTwo from "./StepTwo";
 import InputField from "../UI/Input";
 import StepFour from "./StepFour";
 import axios from "axios";
-import StepThreeDup from "./StepThreeDup";
+import StepThree from "./StepThree";
 import StepOneDup from "./StepOneDup";
 
-const StepThree = () => {
+const StepThreeDup = () => {
   const { control, watch, setValue } = useFormContext();
   const [inputClick, setInputClick] = useState(false);
   const {
@@ -113,7 +113,7 @@ const StepThree = () => {
             )}
             <InputField
               label=""
-              name="code"
+              name="codeDup"
               type="text"
               labelClassName=""
               // error={methods.formState.errors.number?.message as string}
@@ -149,13 +149,13 @@ const StepThree = () => {
         <button
           type="submit"
           onClick={async () => {
-            const isValid = await methods.trigger(["code"]); // Manually validate fields
-            let otp = await methods.watch("code"); // Manually validate fields
+            const isValid = await methods.trigger(["codeDup"]); // Manually validate fields
+            let otpConfirm = await methods.watch("codeDup"); // Manually validate fields
             if (isValid) {
-              otp = await methods.watch("code"); // Manually validate fields
+              otpConfirm = await methods.watch("codeDup"); // Manually validate fields
               try {
-                const response = await axios.post("/api/otp", {
-                  otp,
+                const response = await axios.post("/api/otpConfirm", {
+                  otpConfirm,
                 });
 
                 if (response.status === 200) {
@@ -182,4 +182,4 @@ const StepThree = () => {
   );
 };
 
-export default StepThree;
+export default StepThreeDup;

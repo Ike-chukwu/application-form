@@ -1,4 +1,3 @@
-import { langKey } from "@/constants";
 
 export const openSidebar = () => {
   document.getElementById("sidebar")?.classList.add("expanded");
@@ -44,16 +43,5 @@ export const formatNumberWithCurrency = (num: number) => {
   }).format(num);
 };
 
-const formatNumber = (value: any) => {
-  const lang = localStorage?.getItem(langKey) || "en";
 
-  return value ? new Intl.NumberFormat(lang, {}).format(value) : 0;
-};
 
-export const truncateAndFormat = (integer: any, fraction?: any) => {
-  if (fraction?.toString().length) {
-    return `${formatNumber(integer)}.${fraction}`;
-  }
-
-  return formatNumber(integer);
-};

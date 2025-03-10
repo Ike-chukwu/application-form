@@ -13,19 +13,15 @@ import StepThree from "./FormSteps/StepThree";
 import { LoginSetupSteps } from "@/constants";
 import { useMultiStepForm } from "../hooks/useMultiStepForm";
 import StepFour from "./FormSteps/StepFour";
-import { MultiStepPayload, multiStepSchema } from "@/app/services/login/schema";
+import { MultiStepPayload, multiStepSchema } from "@/services/login/schema";
+import StepOneDup from "./FormSteps/StepOneDup";
+import StepThreeDup from "./FormSteps/StepThreeDup";
+import { useRouter } from "next/navigation";
 
-type Prop = {
-  onSave: (values: MultiStepPayload) => void;
-  info?: any;
-  isLoading: boolean;
-};
-
-const MForm: React.FC<Prop> = ({ onSave, info, isLoading }) => {
+const MForm = () => {
   const {
     stepIndex,
     formStep,
-    push,
     back,
     next,
     changeQuery,
@@ -36,14 +32,15 @@ const MForm: React.FC<Prop> = ({ onSave, info, isLoading }) => {
   } = useMultiStepForm(
     [
       <StepOne key={0} />,
-      <StepTwo key={1} />,
-      <StepThree key={2} />,
-      <StepFour key={3} />,
+      <StepOneDup key={1} />,
+      <StepTwo key={2} />,
+      <StepThree key={3} />,
+      <StepThreeDup key={4} />,
+      <StepFour key={5} />,
     ],
     "loginUser"
   );
-  const { getQuery } = useRouterQuery();
-
+  const { push } = useRouter();
   const methods = useForm({
     resolver: yupResolver(multiStepSchema),
     mode: "all",
@@ -53,21 +50,7 @@ const MForm: React.FC<Prop> = ({ onSave, info, isLoading }) => {
     changeQuery("step", step);
   };
   const onSubmit = (values: MultiStepPayload) => {
-    // const kdmFormValues = values;
-    // const reachCinemas = values?.cinemasUsingReach
-    //   ?.map((cinema) => cinema.name)
-    //   .filter(Boolean) as string[];
-    // const nonReachCinemas = values?.cinemasUsingReach
-    //   ?.map((cinema) => cinema.name)
-    //   .filter(Boolean) as string[];
-    // console.log(values);
-    // onSave({
-    //   validityPeriod: +values.validityPeriod,
-    //   // filmId: filmId,
-    //   // callbackUrl: "/kdm/confirmation",
-    //   nonReachCinemas: values.nonReachCinemas,
-    //   reachCinemas: values.reachCinemas || [],
-    // });
+    push("/confirmation");
   };
 
   return (

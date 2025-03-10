@@ -110,7 +110,7 @@ const ImagePicker: React.FC<Prop> = ({
         >
           <div className={clsx("flex items-center gap-[18px]", pickerClass)}>
             {showBtn ? <UploadIcon height="40px" width="40px" /> : null}
-            <div className="space-y-1 text-xs font-light text-[#AAAAAAAA]">
+            <div className="space-y-1 text-xs font-light text-black">
               <p>Click to Upload image</p>
               <p>svg, png or png (max ---kb)</p>
             </div>

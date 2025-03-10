@@ -1,18 +1,15 @@
 "use client";
 import AccountForm from "@/components/AccountForm";
-import Link from "next/link";
-import React from "react";
+import React, { Suspense } from "react";
 
 const Account = () => {
   return (
-    <div className="flex justify-center py-8 ">
-      <AccountForm
-        isLoading={false}
-        onSave={() => {
-          console.log("yes");
-        }}
-      />
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      {/* <MyComponent /> */}
+      <div className="flex justify-center py-8 ">
+        <AccountForm />
+      </div>
+    </Suspense>
   );
 };
 
