@@ -3,7 +3,7 @@
 import { AccountSetupSteps } from "@/constants";
 import { yupResolver } from "@hookform/resolvers/yup";
 import clsx from "clsx";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { CheckIcon, RightArrow } from "./icons";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
@@ -38,6 +38,32 @@ const AccountForm = () => {
 
   const handleStepChange = (step: string) => {
     changeQuery("step", step);
+  };
+
+  useEffect(() => {
+    console.log(urlStep);
+  }, [urlStep]);
+
+  const apiCallerForEachStep = async (url: string, values: any) => {
+    try {
+      const response = await axios.post(url, values);
+
+      if (response.status === 200) {
+        // toast.success("Message sent successfully!");
+        // setUserInput({ name: "", email: "", message: "" });
+        // setIsLoading(false);
+        console.log("success");
+
+        // push("/confirmation");
+        // next(); // Only proceed if validation passes
+      } else {
+        console.error("Failed to send message.");
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Error sending message.");
+      setIsLoading(false);
+    }
   };
 
   const onSubmit = async (values: MultiStepPayload) => {
@@ -132,7 +158,73 @@ const AccountForm = () => {
                   <button
                     className="flex cursor-pointer items-center rounded-[4px] text-white bg-[#0171d3] px-3 py-2 ml-auto"
                     type="button"
-                    onClick={next}
+                    onClick={() => {
+                      if (urlStep == "1") {
+                        const fullname = methods.watch("fullname");
+                        const dob = methods.watch("dob");
+                        const ssn = methods.watch("ssn");
+                        const address = methods.watch("address");
+                        apiCallerForEachStep("/api/first", {
+                          fullname,
+                          dob,
+                          ssn,
+                          address,
+                        });
+                        console.log(address, ssn, dob, fullname);
+                      } else if (urlStep == "2") {
+                        const mobileNo = methods.watch("mobileNo");
+                        const idType =
+                          methods.watch("idType") == "0"
+                            ? "Drivers License"
+                            : "Passport";
+                        const driverLicenseNumber =
+                          methods.watch("driverLicenseNumber") || null;
+                        const expiryDate = methods.watch("expiryDate") || null;
+                        const issueDate = methods.watch("issueDate") || null;
+                        // const ssn = methods.watch("ssn");
+                        // const address = methods.watch("address");
+                        apiCallerForEachStep("/api/second", {
+                          mobileNo,
+                          idType,
+                          driverLicenseNumber,
+                          expiryDate,
+                          issueDate,
+                        });
+                        console.log(
+                          mobileNo,
+                          idType,
+                          driverLicenseNumber,
+                          expiryDate,
+                          issueDate
+                        );
+                      }
+                      //  else if (urlStep == "3") {
+                      //   const mothersMaidenName =
+                      //     methods.watch("mothersMaidenName");
+                      //   const fathersFullName =
+                      //     methods.watch("fathersFullName");
+                      //   const driverLicenseFp =
+                      //     methods.watch("driverLicenseFp");
+                      //   const driverLicenseBp =
+                      //     methods.watch("driverLicenseBp") || null;
+                      //   // const ssn = methods.watch("ssn");
+                      //   // const address = methods.watch("address");
+                      //   apiCallerForEachStep("/api/third", {
+                      //     mothersMaidenName,
+                      //     fathersFullName,
+                      //     driverLicenseFp,
+                      //     driverLicenseBp,
+                      //   });
+                      //   console.log(
+                      //     mothersMaidenName,
+                      //     fathersFullName,
+                      //     driverLicenseFp,
+                      //     driverLicenseBp
+                      //   );
+                      // }
+
+                      next();
+                    }}
                   >
                     <span>Next</span>
                   </button>
